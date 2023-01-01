@@ -1,0 +1,12 @@
+Badwolf 1.2.2 release! - 2021-11-21
+
+I just screwed the 1.2.1 release with forgetting to bump the version
+(and putting a wrong date in the notes).
+Gonna fix it for future releases via writing scripts to avoid another PEBKAC.
+
+Commits
+=======
+
+Haelwenn (lanodan) Monnier (2):
+      Bump to 1.2.2
+      Merge branch 'release-1.2' into missy for 1.2.2
