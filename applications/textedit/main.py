@@ -32,7 +32,18 @@ class FileOperations():
         except AttributeError:
             showerror("Error" , "No fule was detected")
 
+    def save():
+        if file==None:
+          FileOperations.save_as()
+        else:
+          file.seek(0)
+          contents=main.get(1.0 , END)
+          file.write(contents) 
+          file.truncate()
+
+
 root.bind("<Control-o>" , lambda event:FileOperations.open())
+root.bind("<Control-s>" , lambda event:FileOperations.save())
 root.bind("<Control-Shift-S>" , lambda event:FileOperations.save_as())
 root.bind("<Control-y>" , lambda event:main.edit_redo())
 root.bind("<Control-z>" , lambda event:main.edit_undo())
