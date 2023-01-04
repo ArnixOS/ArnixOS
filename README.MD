@@ -1,6 +1,6 @@
 # ArnixOS
 
-# Direcrories
+# Directories
 [packages:-](packages) PKGBUILDs for ArnixOS
 
-[applications:-](applications) PKGBUILDs for ArnixOS
+[applications:-](applications) Applications for ArnixOS
