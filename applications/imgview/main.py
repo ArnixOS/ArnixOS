@@ -1,5 +1,5 @@
 from PIL import Image , ImageTk , UnidentifiedImageError
-from tkinter import Label , Tk , Scrollbar 
+from tkinter import Label , Tk , Scrollbar , Entry , Button
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showerror
 from os import chdir
@@ -9,6 +9,7 @@ root = Tk()
 root.title("arnix-imgview")
 
 imagerender = False
+VERSION = "23.1.devbuild"
 
 def imageopen(event):
     global image , img , imagerender
@@ -72,7 +73,29 @@ def open_from_url(url: str):
     else:
         showerror("Error" , "WebOpen does not support your file extension. Please report this issue on https://github.com/ArnixOS/ArnixOS")
 
-root.bind("<Control-o>" , imageopen)
+def urlimage_dialog(event):
+    dialog = Tk()
+    dialog.title("Online Image Preview")
+    dialog.geometry("300x100")
+    Label(dialog , text="Enter the URL below:- ").pack()
+    et = Entry(dialog)
+    et.pack()
+    run = Button(dialog , text="Open" , command=lambda:open_from_url(et.get()) and dialog.destroy())
+    run.pack()
+    dialog.mainloop()
+
+def about_f(event):
+    abdiag = Tk()
+    abdiag.title("About arnix-imgview")
+    Label(abdiag , text="\n arnix-imgview" , font=("CaskaydiaCove Nerd Font" , 12 , 'bold')).pack()
+    Label(abdiag , text=f"\n {VERSION} \n" , font=("CaskaydiaCove Nerd Font" , 12 , 'bold')).pack()
+    Label(abdiag , text="This is not meant to use for production "  , font=("CaskaydiaCove Nerd Font" , 8 , 'bold')).pack()
+    abdiag.mainloop()
+
+
+root.bind("<Control-o>" ,imageopen)
+root.bind("<Control-a>" , about_f)
+root.bind("<Control-Shift-O>" , urlimage_dialog)
 
 if __name__ == "__main__":
     root.mainloop()
