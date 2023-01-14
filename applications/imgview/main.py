@@ -3,17 +3,22 @@ from tkinter import Label , Tk , Scrollbar , Entry , Button
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showerror
 from os import chdir
-from requests import get
+from requests import get    
 
 root = Tk()
 root.title("arnix-imgview")
+root.configure(bg="#24283b")
 
 imagerender = False
+startuo = Label(root , text="\n \n Welcome to arnix-imgview \n \n Press Ctrl+O to Open File \n Press Ctrl+Shift+O to open Web Image \n \n" , font=("CaskaydiaCove Nerd Font Mono" , 10) , fg="#c0caf5" , bg="#24283b")
+startuo.pack()
 VERSION = "23.1.devbuild"
 
 def imageopen(event):
     global image , img , imagerender
     file = askopenfilename(multiple=True)
+
+    startuo.pack_forget()
 
     for f in file:
         try:
@@ -31,17 +36,21 @@ def imageopen(event):
             imagerender.configure(image=image)
 
 def url_render(filename: str):
+    startuo.pack_forget()
     global image , img , imagerender
     img = Image.open(filename)
     image = ImageTk.PhotoImage(img)
-    if imagerender == True:
-        imagerender.configure(image=image)
-    else:
+    if imagerender == False:
         imagerender = Label(image=image)
         imagerender.pack()
+    else:
+        imagerender.configure(image=image)
     
 
 def open_from_url(url: str):
+
+    startuo.pack_forget()
+
     chdir("/tmp")
     try:
         contents = get(url)
@@ -87,9 +96,10 @@ def urlimage_dialog(event):
 def about_f(event):
     abdiag = Tk()
     abdiag.title("About arnix-imgview")
-    Label(abdiag , text="\n arnix-imgview" , font=("CaskaydiaCove Nerd Font" , 12 , 'bold')).pack()
-    Label(abdiag , text=f"\n {VERSION} \n" , font=("CaskaydiaCove Nerd Font" , 12 , 'bold')).pack()
-    Label(abdiag , text="This is not meant to use for production "  , font=("CaskaydiaCove Nerd Font" , 8 , 'bold')).pack()
+    abdiag.configure(bg="#24283b")
+    Label(abdiag , text="\n arnix-imgview" , font=("CaskaydiaCove Nerd Font" , 12 , 'bold') , fg="#c0caf5" , bg="#24283b").pack()
+    Label(abdiag , text=f"\n {VERSION} \n" , font=("CaskaydiaCove Nerd Font" , 12 , 'bold') , fg="#c0caf5" , bg="#24283b").pack()
+    Label(abdiag , text="This is not meant to use for production "  , font=("CaskaydiaCove Nerd Font" , 8 , 'bold') , fg="#c0caf5" , bg="#24283b").pack()
     abdiag.mainloop()
 
 
