@@ -4,6 +4,7 @@ from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showerror
 from os import chdir
 from requests import get    
+from requests.exceptions import MissingSchema
 
 root = Tk()
 root.title("arnix-imgview")
@@ -16,9 +17,9 @@ VERSION = "23.1.devbuild"
 
 def imageopen(event):
     global image , img , imagerender
+    startuo.pack_forget()
     file = askopenfilename(multiple=True)
 
-    startuo.pack_forget()
 
     for f in file:
         try:
@@ -54,33 +55,35 @@ def open_from_url(url: str):
     chdir("/tmp")
     try:
         contents = get(url)
+    except MissingSchema:
+        showerror("Error" , "No URL detected")
     except ConnectionResetError:
-        askopenfilename("Error" , "Image downloading failed")
-
-    urla = list(url)
-
-    if urla[len(urla)-1] == "g" and urla[len(urla)-2] == "n" and urla[len(urla)-3] == "p":
-        image = open('image.png' , "wb")
-        image.write(contents.content)
-        url_render("image.png")
-    elif urla[len(urla)-1] == "g" and urla[len(urla)-2] == "p" and urla[len(urla)-3] == "j":
-        image = open('image.jpg' , "wb")
-        image.write(contents.content)
-        url_render("image.jpg")
-    elif urla[len(urla)-1] == "b" and urla[len(urla)-2] == "m" and urla[len(urla)-3] == "p":
-        image = open('image.bmp' , "wb")
-        image.write(contents.content)
-        url_render("image.bmp")
-    elif urla[len(urla)-1] == "o" and urla[len(urla)-2] == "c" and urla[len(urla)-3] == "i":
-        image = open('image.ico' , "wb")
-        image.write(contents.content)
-        url_render("image.ico")
-    elif urla[len(urla)-1] == "g" and urla[len(urla)-2] == "e" and urla[len(urla)-3] == "p" and urla[len(urla)-4] == "j":
-        image = open('image.jpeg' , "wb")
-        image.write(contents.content)
-        url_render("image.jpeg")
+        showerror("Error" , "Image downloading failed")
     else:
-        showerror("Error" , "WebOpen does not support your file extension. Please report this issue on https://github.com/ArnixOS/ArnixOS")
+        urla = list(url)
+
+        if urla[len(urla)-1] == "g" and urla[len(urla)-2] == "n" and urla[len(urla)-3] == "p":
+            image = open('image.png' , "wb")
+            image.write(contents.content)
+            url_render("image.png")
+        elif urla[len(urla)-1] == "g" and urla[len(urla)-2] == "p" and urla[len(urla)-3] == "j":
+            image = open('image.jpg' , "wb")
+            image.write(contents.content)
+            url_render("image.jpg")
+        elif urla[len(urla)-1] == "b" and urla[len(urla)-2] == "m" and urla[len(urla)-3] == "p":
+            image = open('image.bmp' , "wb")
+            image.write(contents.content)
+            url_render("image.bmp")
+        elif urla[len(urla)-1] == "o" and urla[len(urla)-2] == "c" and urla[len(urla)-3] == "i":
+            image = open('image.ico' , "wb")
+            image.write(contents.content)
+            url_render("image.ico")
+        elif urla[len(urla)-1] == "g" and urla[len(urla)-2] == "e" and urla[len(urla)-3] == "p" and urla[len(urla)-4] == "j":
+            image = open('image.jpeg' , "wb")
+            image.write(contents.content)
+            url_render("image.jpeg")
+        else:
+            showerror("Error" , "WebOpen does not support your file extension. Please report this issue on https://github.com/ArnixOS/ArnixOS")
 
 def urlimage_dialog(event):
     dialog = Tk()
@@ -89,7 +92,7 @@ def urlimage_dialog(event):
     Label(dialog , text="Enter the URL below:- ").pack()
     et = Entry(dialog)
     et.pack()
-    run = Button(dialog , text="Open" , command=lambda:open_from_url(et.get()) and dialog.destroy())
+    run = Button(dialog , text="Open" , command=lambda:open_from_url(et.get()))
     run.pack()
     dialog.mainloop()
 
@@ -103,8 +106,18 @@ def about_f(event):
     abdiag.mainloop()
 
 
+def rotate(angle: float):
+    global img , image ,  imagerender
+    if imagerender==False:
+        showerror("Error" , "No image found")
+    else:
+        img = img.rotate(angle , expand=True)
+        image = ImageTk.PhotoImage(img)
+        imagerender.configure(image=image)
+
 root.bind("<Control-o>" ,imageopen)
 root.bind("<Control-a>" , about_f)
+root.bind("<Control-r>" , lambda event:rotate(90))
 root.bind("<Control-Shift-O>" , urlimage_dialog)
 
 if __name__ == "__main__":
