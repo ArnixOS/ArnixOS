@@ -1,11 +1,11 @@
 from PIL import Image , ImageTk , UnidentifiedImageError
-from tkinter import Label , Tk , Scrollbar , Entry , Button
+from tkinter import Label , Tk , Entry , Button
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showerror
 from os import chdir
 from requests import get    
 from requests.exceptions import MissingSchema
-
+                 
 root = Tk()
 root.title("arnix-imgview")
 root.configure(bg="#24283b")
@@ -49,7 +49,6 @@ def url_render(filename: str):
     
 
 def open_from_url(url: str):
-
     startuo.pack_forget()
 
     chdir("/tmp")
@@ -66,26 +65,37 @@ def open_from_url(url: str):
             image = open('image.png' , "wb")
             image.write(contents.content)
             url_render("image.png")
+            root.title(f"{url} - arnix-imgview")
+            dialog.destroy()
         elif urla[len(urla)-1] == "g" and urla[len(urla)-2] == "p" and urla[len(urla)-3] == "j":
             image = open('image.jpg' , "wb")
             image.write(contents.content)
             url_render("image.jpg")
+            root.title(f"{url} - arnix-imgview")
+            dialog.destroy()
         elif urla[len(urla)-1] == "b" and urla[len(urla)-2] == "m" and urla[len(urla)-3] == "p":
             image = open('image.bmp' , "wb")
             image.write(contents.content)
             url_render("image.bmp")
+            root.title(f"{url} - arnix-imgview")
+            dialog.destroy()
         elif urla[len(urla)-1] == "o" and urla[len(urla)-2] == "c" and urla[len(urla)-3] == "i":
             image = open('image.ico' , "wb")
             image.write(contents.content)
             url_render("image.ico")
+            root.title(f"{url} - arnix-imgview")
+            dialog.destroy()
         elif urla[len(urla)-1] == "g" and urla[len(urla)-2] == "e" and urla[len(urla)-3] == "p" and urla[len(urla)-4] == "j":
             image = open('image.jpeg' , "wb")
             image.write(contents.content)
             url_render("image.jpeg")
+            root.title(f"{url} - arnix-imgview")
+            dialog.destroy()
         else:
             showerror("Error" , "WebOpen does not support your file extension. Please report this issue on https://github.com/ArnixOS/ArnixOS")
 
 def urlimage_dialog(event):
+    global dialog
     dialog = Tk()
     dialog.title("Online Image Preview")
     dialog.geometry("300x100")
@@ -104,7 +114,6 @@ def about_f(event):
     Label(abdiag , text=f"\n {VERSION} \n" , font=("CaskaydiaCove Nerd Font" , 12 , 'bold') , fg="#c0caf5" , bg="#24283b").pack()
     Label(abdiag , text="This is not meant to use for production "  , font=("CaskaydiaCove Nerd Font" , 8 , 'bold') , fg="#c0caf5" , bg="#24283b").pack()
     abdiag.mainloop()
-
 
 def rotate(angle: float):
     global img , image ,  imagerender
