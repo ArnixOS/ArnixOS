@@ -12,4 +12,4 @@ This is the source for the official image viewer made..
 - [x] Opening Images
 - [x] Opening Images from web
 - [x] Added Image rotation
-- [ ] Scrollbars
+- [ ] Scale images on basis of resolution
