@@ -13,7 +13,7 @@ root.configure(bg="#24283b")
 imagerender = False
 startuo = Label(root , text="\n \n Welcome to arnix-imgview \n \n Press Ctrl+O to Open File \n Press Ctrl+Shift+O to open Web Image \n \n" , font=("CaskaydiaCove Nerd Font Mono" , 10) , fg="#c0caf5" , bg="#24283b")
 startuo.pack()
-VERSION = "23.1.devbuild"
+VERSION = "23.1-alpha"
 
 def imageopen(event):
     global image , img , imagerender
@@ -28,8 +28,15 @@ def imageopen(event):
             showerror("Error" , f"Cannot identify {f}")
             break
 
-        root.title(f"{f} - arnix-imgview")        
         image = ImageTk.PhotoImage(img)
+        root.title(f"{f} - arnix-imgview")     
+
+        if image.height() and image.width() > root.winfo_screenheight() and root.winfo_screenwidth():
+            img.thumbnail((root.winfo_screenheight() , root.winfo_screenwidth()))
+            image = ImageTk.PhotoImage(img)
+        else:
+            pass
+
         if imagerender == False:
             imagerender = Label(image=image)
             imagerender.pack()
@@ -41,13 +48,18 @@ def url_render(filename: str):
     global image , img , imagerender
     img = Image.open(filename)
     image = ImageTk.PhotoImage(img)
+    if image.height() and image.width() > root.winfo_screenheight() and root.winfo_screenwidth():
+        img.thumbnail((root.winfo_screenheight() , root.winfo_screenwidth()))
+        image = ImageTk.PhotoImage(img)
+    else:
+        pass
+    
     if imagerender == False:
         imagerender = Label(image=image)
         imagerender.pack()
     else:
         imagerender.configure(image=image)
     
-
 def open_from_url(url: str):
     startuo.pack_forget()
 
@@ -123,6 +135,10 @@ def rotate(angle: float):
         img = img.rotate(angle , expand=True)
         image = ImageTk.PhotoImage(img)
         imagerender.configure(image=image)
+        try:
+            dialog.destroy()
+        except NameError:
+            pass
 
 root.bind("<Control-o>" ,imageopen)
 root.bind("<Control-a>" , about_f)
