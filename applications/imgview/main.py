@@ -1,10 +1,11 @@
 from PIL import Image , ImageTk , UnidentifiedImageError
 from tkinter import Label , Tk , Entry , Button
 from tkinter.filedialog import askopenfilename
-from tkinter.messagebox import showerror
+from tkinter.messagebox import showerror , showinfo
 from os import chdir
 from requests import get    
 from requests.exceptions import MissingSchema
+from mimes import mimes
                  
 root = Tk()
 root.title("arnix-imgview")
@@ -13,12 +14,14 @@ root.configure(bg="#24283b")
 imagerender = False
 startuo = Label(root , text="\n \n Welcome to arnix-imgview \n \n Press Ctrl+O to Open File \n Press Ctrl+Shift+O to open Web Image \n \n" , font=("CaskaydiaCove Nerd Font Mono" , 10) , fg="#c0caf5" , bg="#24283b")
 startuo.pack()
-VERSION = "23.1-alpha"
+VERSION = "23.1-beta"
+fileopen = False
+webimage = False
 
 def imageopen(event):
-    global image , img , imagerender
+    global image , img , imagerender , file , fileopen , orgimagew , origimageh
     startuo.pack_forget()
-    file = askopenfilename(multiple=True)
+    file = askopenfilename(multiple=True , filetypes=mimes)
 
 
     for f in file:
@@ -28,8 +31,13 @@ def imageopen(event):
             showerror("Error" , f"Cannot identify {f}")
             break
 
+        fileopen = True
+
         image = ImageTk.PhotoImage(img)
         root.title(f"{f} - arnix-imgview")     
+
+        origimageh = image.height()
+        orgimagew = image.width()
 
         if image.height() and image.width() > root.winfo_screenheight() and root.winfo_screenwidth():
             img.thumbnail((root.winfo_screenheight() , root.winfo_screenwidth()))
@@ -61,6 +69,7 @@ def url_render(filename: str):
         imagerender.configure(image=image)
     
 def open_from_url(url: str):
+    global webimage
     startuo.pack_forget()
 
     chdir("/tmp")
@@ -71,6 +80,7 @@ def open_from_url(url: str):
     except ConnectionResetError:
         showerror("Error" , "Image downloading failed")
     else:
+        webimage = True
         urla = list(url)
 
         if urla[len(urla)-1] == "g" and urla[len(urla)-2] == "n" and urla[len(urla)-3] == "p":
@@ -140,10 +150,20 @@ def rotate(angle: float):
         except NameError:
             pass
 
+def save():
+    if fileopen == True:
+        img.thumbnail((origimageh , orgimagew))
+        img.save(file[0])
+    elif webimage == True:
+        showinfo("Info" , "WebImages are not saved as of 23.1")
+    else:
+        pass
+
 root.bind("<Control-o>" ,imageopen)
 root.bind("<Control-a>" , about_f)
 root.bind("<Control-r>" , lambda event:rotate(90))
 root.bind("<Control-Shift-O>" , urlimage_dialog)
+root.bind("<Control-s>" , lambda event:save())
 
 if __name__ == "__main__":
     root.mainloop()
