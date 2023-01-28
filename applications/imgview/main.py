@@ -120,6 +120,12 @@ def open_from_url(url: str):
 
 def urlimage_dialog(event):
     global imagefr , getbton , et
+
+    try:
+        imagefr.pack_forget()
+    except NameError:
+        pass
+
     imagefr = Frame(root , width=root.winfo_width() , height=20 , bg="#24283b")
 
     et = Entry(root , insertbackground="#c0caf5" , fg="#c0caf5" , bg="#24283b")
