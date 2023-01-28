@@ -4,4 +4,5 @@ mimes = [("PNG" , "*.png") ,
 ("WEBP" , "*.webp"),
 ("GIF" , "*.gif"),
 ("BMP" , "*.bmp"),
-("ICO" , "*.ico")]
+("ICO" , "*.ico"),
+("All files" , "*.*")]
