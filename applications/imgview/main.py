@@ -1,10 +1,10 @@
 from PIL import Image , ImageTk , UnidentifiedImageError
-from tkinter import Label , Tk , Entry , Button
+from tkinter import Label , Tk , Entry , Button , Frame
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showerror , showinfo
 from os import chdir
 from requests import get    
-from requests.exceptions import MissingSchema
+from requests.exceptions import MissingSchema , ConnectionError
 from mimes import mimes
                  
 root = Tk()
@@ -13,8 +13,8 @@ root.configure(bg="#24283b")
 
 imagerender = False
 startuo = Label(root , text="\n \n Welcome to arnix-imgview \n \n Press Ctrl+O to Open File \n Press Ctrl+Shift+O to open Web Image \n \n" , font=("CaskaydiaCove Nerd Font Mono" , 10) , fg="#c0caf5" , bg="#24283b")
-startuo.pack()
-VERSION = "23.1-beta"
+startuo.pack(side="bottom")
+VERSION = "0.1-beta"
 fileopen = False
 webimage = False
 
@@ -47,7 +47,7 @@ def imageopen(event):
 
         if imagerender == False:
             imagerender = Label(image=image)
-            imagerender.pack()
+            imagerender.pack(side="bottom")
         else:
             imagerender.configure(image=image)
 
@@ -64,7 +64,7 @@ def url_render(filename: str):
     
     if imagerender == False:
         imagerender = Label(image=image)
-        imagerender.pack()
+        imagerender.pack(side="bottom")
     else:
         imagerender.configure(image=image)
     
@@ -79,6 +79,8 @@ def open_from_url(url: str):
         showerror("Error" , "No URL detected")
     except ConnectionResetError:
         showerror("Error" , "Image downloading failed")
+    except ConnectionError:
+        showerror("Error" , "No internet")
     else:
         webimage = True
         urla = list(url)
@@ -88,53 +90,54 @@ def open_from_url(url: str):
             image.write(contents.content)
             url_render("image.png")
             root.title(f"{url} - arnix-imgview")
-            dialog.destroy()
+            imagefr.pack_forget()
         elif urla[len(urla)-1] == "g" and urla[len(urla)-2] == "p" and urla[len(urla)-3] == "j":
             image = open('image.jpg' , "wb")
             image.write(contents.content)
             url_render("image.jpg")
             root.title(f"{url} - arnix-imgview")
-            dialog.destroy()
+            imagefr.pack_forget()
         elif urla[len(urla)-1] == "b" and urla[len(urla)-2] == "m" and urla[len(urla)-3] == "p":
             image = open('image.bmp' , "wb")
             image.write(contents.content)
             url_render("image.bmp")
             root.title(f"{url} - arnix-imgview")
-            dialog.destroy()
+            imagefr.pack_forget()
         elif urla[len(urla)-1] == "o" and urla[len(urla)-2] == "c" and urla[len(urla)-3] == "i":
             image = open('image.ico' , "wb")
             image.write(contents.content)
             url_render("image.ico")
             root.title(f"{url} - arnix-imgview")
-            dialog.destroy()
+            imagefr.pack_forget()
         elif urla[len(urla)-1] == "g" and urla[len(urla)-2] == "e" and urla[len(urla)-3] == "p" and urla[len(urla)-4] == "j":
             image = open('image.jpeg' , "wb")
             image.write(contents.content)
             url_render("image.jpeg")
             root.title(f"{url} - arnix-imgview")
-            dialog.destroy()
+            imagefr.pack_forget()
         else:
             showerror("Error" , "WebOpen does not support your file extension. Please report this issue on https://github.com/ArnixOS/ArnixOS")
 
 def urlimage_dialog(event):
-    global dialog
-    dialog = Tk()
-    dialog.title("Online Image Preview")
-    dialog.geometry("300x100")
-    Label(dialog , text="Enter the URL below:- ").pack()
-    et = Entry(dialog)
-    et.pack()
-    run = Button(dialog , text="Open" , command=lambda:open_from_url(et.get()))
-    run.pack()
-    dialog.mainloop()
+    global imagefr , getbton , et
+    imagefr = Frame(root , width=root.winfo_width() , height=20 , bg="#24283b")
+
+    et = Entry(root , insertbackground="#c0caf5" , fg="#c0caf5" , bg="#24283b")
+    getbton = Button(root , text="Preview:-" , bg="#24283b"  , fg="#c0caf5", command=lambda:open_from_url(et.get()) , font=("CaskaydiaCove Nerd Font" , 7))
+
+    Label(text="URL:- " , bg="#24283b" , fg="#c0caf5" , font=("CaskaydiaCove Nerd Font" , 8)).pack(in_=imagefr , side="left")
+    et.pack(in_=imagefr , side="left")
+    getbton.pack(in_=imagefr , side="right")
+
+    imagefr.pack(side="top")
 
 def about_f(event):
     abdiag = Tk()
     abdiag.title("About arnix-imgview")
     abdiag.configure(bg="#24283b")
     Label(abdiag , text="\n arnix-imgview" , font=("CaskaydiaCove Nerd Font" , 12 , 'bold') , fg="#c0caf5" , bg="#24283b").pack()
-    Label(abdiag , text=f"\n {VERSION} \n" , font=("CaskaydiaCove Nerd Font" , 12 , 'bold') , fg="#c0caf5" , bg="#24283b").pack()
-    Label(abdiag , text="This is not meant to use for production "  , font=("CaskaydiaCove Nerd Font" , 8 , 'bold') , fg="#c0caf5" , bg="#24283b").pack()
+    Label(abdiag , text=f"\n {VERSION} \n" , font=("CaskaydiaCove Nerd Font" , 12 ) , fg="#c0caf5" , bg="#24283b").pack()
+    Label(abdiag , text="This is not meant to use for production "  , font=("CaskaydiaCove Nerd Font" , 8) , fg="#c0caf5" , bg="#24283b").pack()
     abdiag.mainloop()
 
 def rotate(angle: float):
@@ -145,17 +148,13 @@ def rotate(angle: float):
         img = img.rotate(angle , expand=True)
         image = ImageTk.PhotoImage(img)
         imagerender.configure(image=image)
-        try:
-            dialog.destroy()
-        except NameError:
-            pass
 
 def save():
     if fileopen == True:
         img.thumbnail((origimageh , orgimagew))
         img.save(file[0])
     elif webimage == True:
-        showinfo("Info" , "WebImages are not saved as of 23.1")
+        showinfo("Info" , "WebImages are not saved as of 0.1")
     else:
         pass
 
