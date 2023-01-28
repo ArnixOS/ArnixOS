@@ -8,10 +8,10 @@ This is the source for the official image viewer made..
 - Opening Images from web and keeping temporary
 - More coming soon..
 
-###### Expected Features from 23.1:-
+> ## Expected Features from 0.1:-
 - [x] Opening Images
 - [x] Opening Images from web
 - [x] Added Image rotation
 - [x] Scale images on basis of resolution
-- [ ] Save rotated images etc..
-- [ ] Mimetypes
+- [x] Saving Images
+
