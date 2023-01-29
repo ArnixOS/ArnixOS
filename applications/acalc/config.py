@@ -11,4 +11,4 @@ functions = "#9ece6a"
 error = "#f7768e"
 
 ### --- Default Font --- ###
-font = "CaskaydiaCove Nerd Font Mono"
+font = "CaskaydiaCove Nerd Font"
