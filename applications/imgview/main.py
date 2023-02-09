@@ -2,7 +2,8 @@ from PIL import Image , ImageTk , UnidentifiedImageError
 from tkinter import Label , Tk , Entry , Button , Frame
 from tkinter.filedialog import askopenfilename
 from tkinter.messagebox import showerror , showinfo
-from os import chdir
+from os import chdir, getlogin 
+from os.path import isfile
 from requests import get    
 from requests.exceptions import MissingSchema , ConnectionError
 from mimes import mimes
@@ -11,10 +12,22 @@ root = Tk()
 root.title("arnix-imgview")
 root.configure(bg="#24283b")
 
+default_history = f"/home/{getlogin()}/.arnix_imgview_history"
+hist_exists = isfile(default_history)
+
+if hist_exists == True:
+    hist = open(default_history, 'w')
+    pass
+else:
+    hist = open(default_history, 'w')
+    pass
+
+imageopened = []
+
 imagerender = False
 startuo = Label(root , text="\n \n Welcome to arnix-imgview \n \n Press Ctrl+O to Open File \n Press Ctrl+Shift+O to open Web Image \n \n" , font=("CaskaydiaCove Nerd Font Mono" , 10) , fg="#c0caf5" , bg="#24283b")
 startuo.pack(side="bottom")
-VERSION = "0.1-beta"
+VERSION = "helix-pb-beta"
 fileopen = False
 webimage = False
 
@@ -23,13 +36,14 @@ def imageopen(event):
     startuo.pack_forget()
     file = askopenfilename(multiple=True , filetypes=mimes)
 
-
     for f in file:
         try:
             img = Image.open(f) 
         except UnidentifiedImageError: 
             showerror("Error" , f"Cannot identify {f}")
             break
+
+        imageopened.append(file)
 
         fileopen = True
 
@@ -84,6 +98,7 @@ def open_from_url(url: str):
     else:
         webimage = True
         urla = list(url)
+        imageopened.append(url)
 
         if urla[len(urla)-1] == "g" and urla[len(urla)-2] == "n" and urla[len(urla)-3] == "p":
             image = open('image.png' , "wb")
@@ -120,12 +135,6 @@ def open_from_url(url: str):
 
 def urlimage_dialog(event):
     global imagefr , getbton , et
-
-    try:
-        imagefr.pack_forget()
-    except NameError:
-        pass
-
     imagefr = Frame(root , width=root.winfo_width() , height=20 , bg="#24283b")
 
     et = Entry(root , insertbackground="#c0caf5" , fg="#c0caf5" , bg="#24283b")
@@ -164,6 +173,11 @@ def save():
     else:
         pass
 
+def write_history():
+    hist.write(str(imageopened))
+    hist.close()
+    exit()
+
 root.bind("<Control-o>" ,imageopen)
 root.bind("<Control-a>" , about_f)
 root.bind("<Control-r>" , lambda event:rotate(90))
@@ -171,4 +185,5 @@ root.bind("<Control-Shift-O>" , urlimage_dialog)
 root.bind("<Control-s>" , lambda event:save())
 
 if __name__ == "__main__":
+    root.protocol("WM_DELETE_WINDOW", write_history)
     root.mainloop()
