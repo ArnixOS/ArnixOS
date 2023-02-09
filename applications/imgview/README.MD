@@ -14,4 +14,4 @@ This is the source for the official image viewer made..
 - [x] Added Image rotation
 - [x] Scale images on basis of resolution
 - [x] Saving Images
-
+- [x] Image opening history
