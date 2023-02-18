@@ -1,3 +1,0 @@
-# acalc
-
-Calculator for ArnixOS
